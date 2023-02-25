@@ -4,14 +4,14 @@ import { Button, Form, Table } from 'react-bootstrap';
 import './gameTable.css';
 
 interface Game {
-    id: number;
+    id?: string;
     name: string;
     location: string;
 }
 
 const GamesTable: React.FC = () => {
     const [games, setGames] = useState<Game[]>([]);
-    const [newGame, setNewGame] = useState<Game>({ id: 0, name: '', location: '' });
+    const [newGame, setNewGame] = useState<Game>({ name: '', location: '' });
 
     useEffect(() => {
         axios.get<Game[]>('http://localhost:8080/games')
@@ -24,12 +24,12 @@ const GamesTable: React.FC = () => {
         axios.post<Game>('http://localhost:8080/games', newGame)
             .then(response => {
                 setGames([...games, response.data]);
-                setNewGame({ id: 0, name: '', location: '' });
+                setNewGame({ id: '', name: '', location: '' });
             })
             .catch(error => console.log(error));
     }
 
-    const handleDelete = (id: number) => {
+    const handleDelete = (id: string) => {
         axios.delete(`http://localhost:8080/games/${id}`)
             .then(response => {
                 if (response.status === 200) {
@@ -58,8 +58,7 @@ const GamesTable: React.FC = () => {
                             <td>{game.name}</td>
                             <td>{game.location}</td>
                             <td>
-
-                                <Button variant="danger" onClick={() => handleDelete(game.id)}>Delete</Button>
+                                <Button variant="danger" onClick={() => handleDelete(game.id ?? '')}>Delete</Button>
                             </td>
                         </tr>
                     ))}
